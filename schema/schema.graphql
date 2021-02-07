@@ -1,0 +1,58 @@
+directive @auth on FIELD_DEFINITION
+
+type Query {
+    balance: Int! @auth
+    state: State! @auth
+}
+
+type State {
+    cardsRemaining: Int!
+    activeCard: Card
+}
+
+type Card {
+    id: ID!
+    cells: [Cell]!,
+    crossLine: [Int]!
+}
+
+type Cell {
+    value: Int!,
+    opened: Boolean!
+}
+
+type MutationResponse {
+    message: String
+}
+
+input UserInput {
+    login: String! @constraint(minLength: 3, maxLength: 15)
+    password: String! @constraint(minLength: 6)
+}
+
+input BalanceInput {
+    amount: Int! @constraint(min: 1, max: 5000)
+}
+
+input CardBuyInput {
+    count: Int! @constraint(min: 1, max: 10)
+}
+
+input OpenCellInput {
+    id: ID!
+    cell: Int! @constraint(min: 0, max: 8)
+}
+
+input EndGameInput {
+    id: ID!
+}
+
+type Mutation {
+    signin(input: UserInput!): MutationResponse
+    signup(input: UserInput!): MutationResponse
+    increaseBalance(input: BalanceInput!): Int @auth
+    decreaseBalance(input: BalanceInput!): Int @auth
+    buyCard(input: CardBuyInput): MutationResponse @auth
+    openCell(input: OpenCellInput): MutationResponse @auth
+    endGame(input: EndGameInput): MutationResponse @auth
+}
